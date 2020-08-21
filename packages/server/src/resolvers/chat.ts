@@ -1,7 +1,8 @@
 import { Chat } from "../entities/Chat";
 import { User } from "../entities/User";
-import { Arg, Mutation, Query } from "type-graphql";
+import { Arg, Ctx, Mutation, Query } from "type-graphql";
 import { Message } from "../entities/Message";
+import { MyContext } from "src/types";
 
 export class ChatResolver {
   @Query(() => [Chat])
@@ -11,20 +12,23 @@ export class ChatResolver {
 
   @Query(() => [Message])
   async getMessages(@Arg("chatId") chatId: number): Promise<Message[]> {
-    return await Message.find({ where: { chat: chatId },
-    relations: ["sender"]});
+    return await Message.find({
+      where: { chat: chatId },
+      relations: ["sender"]
+    });
   }
 
   @Mutation(() => Chat)
-  async save(): Promise<Chat> {
-    const users = await User.find();
+  async createChat(
+    @Arg("contactId") contactId: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Chat> {
 
-    if (users.length < 2) throw new Error("no user");
-    // This is dummy for now
-    const owner = users[0];
-    const contact = users[1];
+    console.log(req.session.userId);
+    const owner = await User.findOne(req.session.userId);
+    const contact = await User.findOne(contactId);
 
-    console.log(owner, contact);
+    if (!contact) throw new Error("contact not found");
 
     const chat = await Chat.create({
       owner: owner,
@@ -36,16 +40,15 @@ export class ChatResolver {
 
   @Mutation(() => Message)
   async sendMessage(
+    @Ctx() { req }: MyContext,
     @Arg("chatId") chatId: number,
     @Arg("text") text: string
   ): Promise<Message> {
     const chat = await Chat.findOne(chatId);
 
-    const users = await User.find();
-
-    const sender = users[0];
-
     if (!chat) throw new Error("Chat not found");
+
+    const sender = await User.findOne(req.session.userId);
 
     const message = await Message.create({
       sender,

@@ -20,6 +20,9 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   username!: string;
 
+  @Column()
+  password!: string;
+
   @Field(() => [Chat], { nullable: true })
   @OneToMany(() => Chat, (chat) => chat.owner)
   chats: Chat[];
