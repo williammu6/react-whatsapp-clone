@@ -8,3 +8,4 @@
 - Type GraphQL
 - TypeORM
 - ApolloServer
+- TailwindCSS
