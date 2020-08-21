@@ -1,0 +1,17 @@
+{
+  "name": "@wpp/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "lerna run build",
+    "start": "lerna run start --parallel",
+    "watch": "lerna run watch --stream",
+    "tsc": "lerna run tsc --stream"
+  },
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  }
+}
