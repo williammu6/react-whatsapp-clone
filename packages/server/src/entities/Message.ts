@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
+  Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
@@ -16,11 +17,16 @@ export class Message extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column()
+  @Field(() => String)
+  text: string;
+
   @ManyToOne(() => Chat)
   chat: Chat;
 
+  @Field(() => User)
   @ManyToOne(() => User)
-  sender!: User;
+  sender: User;
 
   @Field(() => String)
   @CreateDateColumn()

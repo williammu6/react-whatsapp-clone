@@ -4,10 +4,11 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
+  OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import {User} from "./User";
+import { Message } from "./Message";
+import { User } from "./User";
 
 @ObjectType()
 @Entity()
@@ -16,14 +17,31 @@ export class Chat extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Field(() => User)
-  @ManyToOne(() => User)
-  owner!: User;
-
-  @OneToOne(() => User)
-  contact: User;
-
   @Field(() => String)
   @CreateDateColumn()
   createdAt: Date;
+
+  @Field(() => User, { nullable: false })
+  @ManyToOne(
+    () => User,
+    (user: User) => user.chats
+  )
+  owner!: User;
+
+  @Field(() => User, { nullable: false })
+  @ManyToOne(
+    () => User,
+    (user: User) => user.chats
+  )
+  to!: User;
+
+  @Field(() => [Message])
+  @OneToMany(
+    () => Message,
+    (message: Message) => message.chat,
+    {
+      cascade: true
+    }
+  )
+  messages: Message[];
 }

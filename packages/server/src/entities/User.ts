@@ -7,7 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import { Chat } from "./Chat";
+import {Chat} from "./Chat";
 
 @ObjectType()
 @Entity()
@@ -20,14 +20,9 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   username!: string;
 
-  @OneToMany(
-    () => Chat,
-    (chat: Chat) => chat.owner,
-    {
-      cascade: true
-    }
-  )
-  chats!: Chat[];
+  @Field(() => [Chat], { nullable: true })
+  @OneToMany(() => Chat, (chat) => chat.owner)
+  chats: Chat[];
 
   @Field(() => String)
   @CreateDateColumn()

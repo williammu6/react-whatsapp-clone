@@ -13,6 +13,6 @@ export class UserResolver {
 
   @Query(() => [User])
   async getUsers(): Promise<User[]> {
-    return await User.find();
+    return await User.find({ relations: ["chats"] });
   }
 }
