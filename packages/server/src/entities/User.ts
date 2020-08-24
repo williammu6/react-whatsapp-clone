@@ -1,3 +1,4 @@
+import {MinLength} from "class-validator";
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
@@ -18,8 +19,10 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ unique: true })
+  @MinLength(4)
   username!: string;
 
+  @MinLength(3)
   @Column()
   password!: string;
 

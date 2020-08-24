@@ -1,7 +1,6 @@
 import "reflect-metadata";
 import "dotenv-safe/config";
 
-import { COOKIE_NAME } from "./constants";
 import express from "express";
 import { createConnection } from "typeorm";
 import { buildSchema } from "type-graphql";
@@ -12,6 +11,7 @@ import cors from "cors";
 import session from "express-session";
 import { UserResolver } from "./resolvers/user";
 import { ChatResolver } from "./resolvers/chat";
+import {MyContext} from "./types";
 
 const main = async () => {
   await createConnection({
@@ -28,8 +28,8 @@ const main = async () => {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redis = new Redis(process.env.REDIS_URL);
-  app.set("trust proxy", 1);
+
+  const redis = new Redis();
 
   app.use(
     cors({
@@ -40,17 +40,17 @@ const main = async () => {
 
   app.use(
     session({
-      name: COOKIE_NAME,
+      name: "qid",
       store: new RedisStore({
         client: redis,
-        disableTouch: true,
+        disableTouch: true
       }),
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
         httpOnly: true,
         sameSite: "lax",
+        secure: process.env.NODE_ENV === "production"
       },
-      saveUninitialized: false,
       secret: process.env.SESSION_SECRET!,
       resave: false,
     })
@@ -59,9 +59,12 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [UserResolver, ChatResolver],
-      validate: false
+      validate: false,
+      authChecker: ({ context: { req } }) => {
+        return !!req.session.userId;
+      }
     }),
-    context: ({ req, res }) => ({
+    context: ({ req, res, redis }: MyContext) => ({
       req,
       res,
       redis,

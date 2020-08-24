@@ -12,7 +12,7 @@ import { MyContext } from "src/types";
 import argon2 from "argon2";
 
 @InputType()
-class UserInput {
+export class UserInput {
   @Field()
   username: string;
 
@@ -25,7 +25,6 @@ export class UserResolver {
   @Mutation(() => User)
   async register(
     @Arg("data") data: UserInput,
-    @Ctx() { req }: MyContext
   ): Promise<User> {
     const hashedPassword = await argon2.hash(data.password);
 
@@ -33,8 +32,6 @@ export class UserResolver {
       username: data.username,
       password: hashedPassword
     }).save();
-
-    req.session.userId = user.id;
 
     return user;
   }
@@ -51,11 +48,26 @@ export class UserResolver {
     const isValid = await argon2.verify(user.password, data.password);
 
     if (!isValid)
-      throw new Error("wrong password");
+      return null;
 
     req.session.userId = user.id;
+    console.log(req.session);
 
     return user;
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+    return new Promise((resolve, reject) => {
+      req.session.destroy(err => {
+        if (err) {
+          console.log(err);
+          return reject(false);
+        }
+        res.clearCookie("qid");
+        return resolve(true);
+      });
+    });
   }
 
   @Query(() => [User])
@@ -63,14 +75,13 @@ export class UserResolver {
     return await User.find({ relations: ["chats"] });
   }
 
-  @Query(() => User)
-  async me(@Ctx() { req }: MyContext): Promise<User> {
-    const userId= req.session.userId;
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req }: MyContext) {
+    const userId = req.session.userId;
+
     if (!userId)
-      throw new Error("Not logged in");
+      return null;
 
-    const user = await User.findOne(userId);
-
-    return user!;
-  }
+    return await User.findOne(userId);
+ }
 }

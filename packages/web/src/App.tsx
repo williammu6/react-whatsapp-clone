@@ -4,11 +4,29 @@ import "./App.css";
 
 import "./global.css";
 
+import { Login } from "./pages/Login";
+
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  InMemoryCache
+} from "@apollo/client";
+
 function App() {
+  const link = createHttpLink({
+    uri: "http://localhost:4000/graphql",
+    credentials: "include"
+  });
+  const client = new ApolloClient({
+    cache: new InMemoryCache(),
+    link
+  });
+
   return (
-    <div className="App">
-      <h1>Hello World</h1>
-    </div>
+    <ApolloProvider client={client}>
+      <Login />
+    </ApolloProvider>
   );
 }
 
