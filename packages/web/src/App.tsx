@@ -4,7 +4,7 @@ import "./App.css";
 
 import "./global.css";
 
-import { Login } from "./pages/Login";
+import "./tailwind.output.css";
 
 import {
   ApolloClient,
@@ -12,6 +12,8 @@ import {
   createHttpLink,
   InMemoryCache
 } from "@apollo/client";
+
+import Routes from "./routes";
 
 function App() {
   const link = createHttpLink({
@@ -25,7 +27,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <Login />
+      <Routes />
     </ApolloProvider>
   );
 }

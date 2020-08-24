@@ -1,5 +1,6 @@
 import { gql, useMutation } from "@apollo/client";
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 const LOGIN = gql`
   mutation Login($data: UserInput!) {
@@ -11,15 +12,10 @@ const LOGIN = gql`
   }
 `;
 
-const LOGOUT = gql`
-  mutation Logout {
-    logout
-  }
-`;
-
 export const Login = () => {
+  const history = useHistory();
+
   const [login] = useMutation(LOGIN);
-  const [logout] = useMutation(LOGOUT);
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -31,23 +27,38 @@ export const Login = () => {
       password: formData.get("password")
     };
 
-    const response = await login({ variables: { data }} );
+    const response = await login({ variables: { data } });
 
-    console.log(response);
+    if (response.data) {
+      history.push("/");
+    }
   };
 
-  const logggout = async () => {
-    await logout();
-  }
-
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input type="text" name="username" />
-        <input type="password" name="password" />
-        <button type="submit">Login</button>
+    <div className="flex items-center content-center justify-center w-full h-full">
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col justify-between w-56 h-32"
+      >
+        <input
+          className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
+          type="text"
+          name="username"
+          placeholder="Username"
+        />
+        <input
+          className="bg-white focus:outline-none focus:shadow-outline border border-gray-300 rounded-lg py-2 px-4 block w-full appearance-none leading-normal"
+          type="password"
+          name="password"
+          placeholder="Password"
+        />
+        <button
+          className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+          type="submit"
+        >
+          Login
+        </button>
       </form>
-      <button onClick={logggout}>Logout</button>
     </div>
   );
 };
