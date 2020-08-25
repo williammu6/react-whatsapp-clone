@@ -23,8 +23,6 @@ export class ChatResolver {
     @Arg("contactId") contactId: number,
     @Ctx() { req }: MyContext
   ): Promise<Chat> {
-
-    console.log(req.session.userId);
     const owner = await User.findOne(req.session.userId);
     const contact = await User.findOne(contactId);
 

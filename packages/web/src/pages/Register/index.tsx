@@ -4,9 +4,9 @@ import { useHistory } from "react-router-dom";
 import Button from "../../components/UI/Button";
 import Input from "../../components/UI/Input";
 
-const LOGIN = gql`
-  mutation Login($data: UserInput!) {
-    login(data: $data) {
+const REGISTER = gql`
+  mutation Register($data: UserInput!) {
+    register(data: $data) {
       id
       username
       createdAt
@@ -14,10 +14,10 @@ const LOGIN = gql`
   }
 `;
 
-export const Login = () => {
+export const Register = () => {
   const history = useHistory();
 
-  const [login] = useMutation(LOGIN);
+  const [register] = useMutation(REGISTER);
 
   const onSubmit = async (e: any) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ export const Login = () => {
       password: formData.get("password")
     };
 
-    const response = await login({ variables: { data } });
+    const response = await register({ variables: { data } });
 
     if (response.data.login) {
       history.push("/chats");
@@ -55,7 +55,7 @@ export const Login = () => {
         <Button
           type="submit"
         >
-          Login
+          Register
         </Button>
       </form>
     </div>

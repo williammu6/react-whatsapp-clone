@@ -52,6 +52,7 @@ const main = async () => {
         secure: process.env.NODE_ENV === "production"
       },
       secret: process.env.SESSION_SECRET!,
+      saveUninitialized: false,
       resave: false,
     })
   );

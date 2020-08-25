@@ -43,7 +43,8 @@ export class UserResolver {
   ): Promise<User | null> {
     const user = await User.findOne({ where: { username: data.username } });
 
-    if (!user) return null;
+    if (!user)
+      return null;
 
     const isValid = await argon2.verify(user.password, data.password);
 
@@ -51,7 +52,6 @@ export class UserResolver {
       return null;
 
     req.session.userId = user.id;
-    console.log(req.session);
 
     return user;
   }
@@ -61,7 +61,6 @@ export class UserResolver {
     return new Promise((resolve, reject) => {
       req.session.destroy(err => {
         if (err) {
-          console.log(err);
           return reject(false);
         }
         res.clearCookie("qid");

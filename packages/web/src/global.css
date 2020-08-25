@@ -23,6 +23,10 @@ textarea {
   font: 400 18px Roboto, sans-serif;
 }
 
+button:focus {
+  outline: none !important;
+}
+
 button {
   cursor: pointer;
 }
