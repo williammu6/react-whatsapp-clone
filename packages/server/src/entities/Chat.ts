@@ -3,7 +3,7 @@ import {
   BaseEntity,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
@@ -21,19 +21,9 @@ export class Chat extends BaseEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field(() => User, { nullable: false })
-  @ManyToOne(
-    () => User,
-    (user: User) => user.chats
-  )
-  owner!: User;
-
-  @Field(() => User, { nullable: false })
-  @ManyToOne(
-    () => User,
-    (user: User) => user.chats
-  )
-  to!: User;
+  @Field(() => [User], { nullable: false })
+  @ManyToMany(() => User, (user: User) => user.chats)
+  participants: User[];
 
   @Field(() => [Message])
   @OneToMany(

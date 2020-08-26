@@ -5,11 +5,6 @@ import { Message } from "../entities/Message";
 import { MyContext } from "src/types";
 
 export class ChatResolver {
-  @Query(() => [Chat])
-  async getChats() {
-    return await Chat.find({ relations: ["owner", "to"] });
-  }
-
   @Query(() => [Message])
   async getMessages(@Arg("chatId") chatId: number): Promise<Message[]> {
     return await Message.find({
@@ -18,19 +13,43 @@ export class ChatResolver {
     });
   }
 
-  @Mutation(() => Chat)
-  async createChat(
-    @Arg("contactId") contactId: number,
-    @Ctx() { req }: MyContext
-  ): Promise<Chat> {
-    const owner = await User.findOne(req.session.userId);
-    const contact = await User.findOne(contactId);
+  @Query(() => [Chat], { nullable: true })
+  async getChats(@Ctx() { req }: MyContext): Promise<Chat[] | null> {
+    const user = await User.findOne(req.session.userId);
 
-    if (!contact) throw new Error("contact not found");
+    if (!user) return null;
+
+    const myChats = await user.chats;
+
+    const chatsIds = myChats.map((chat: Chat) => chat.id);
+
+    const username = user.username;
+
+    const chats = await Chat.createQueryBuilder("chat")
+      .innerJoinAndSelect("chat.participants", "participants")
+      .leftJoinAndSelect("chat.messages", "messages")
+      .where("chat.id IN (:...chatsIds)", { chatsIds })
+      .andWhere("participants.username != :username", { username })
+      .getMany();
+
+    return chats;
+  }
+
+  @Mutation(() => Chat, { nullable: true })
+  async createChat(
+    @Arg("username") username: string,
+    @Ctx() { req }: MyContext
+  ): Promise<Chat | null> {
+    const me = await User.findOne(req.session.userId);
+
+    if (!me) return null;
+
+    const contact = await User.findOne({ username });
+
+    if (!contact) return null;
 
     const chat = await Chat.create({
-      owner: owner,
-      to: contact
+      participants: [me, contact]
     }).save();
 
     return chat;

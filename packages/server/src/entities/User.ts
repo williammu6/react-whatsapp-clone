@@ -1,14 +1,15 @@
-import {MinLength} from "class-validator";
+import { MinLength } from "class-validator";
 import { Field, ObjectType } from "type-graphql";
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn
 } from "typeorm";
-import {Chat} from "./Chat";
+import { Chat } from "./Chat";
 
 @ObjectType()
 @Entity()
@@ -27,8 +28,9 @@ export class User extends BaseEntity {
   password!: string;
 
   @Field(() => [Chat], { nullable: true })
-  @OneToMany(() => Chat, (chat) => chat.owner)
-  chats: Chat[];
+  @ManyToMany(() => Chat, (chat: Chat) => chat.participants)
+  @JoinTable()
+  chats: Promise<Chat[]>;
 
   @Field(() => String)
   @CreateDateColumn()
