@@ -22,11 +22,13 @@ export class UserInput {
 
 @Resolver(User)
 export class UserResolver {
-  @Mutation(() => User)
-  async register(
-    @Arg("data") data: UserInput,
-  ): Promise<User> {
+  @Mutation(() => User, { nullable: true })
+  async register(@Arg("data") data: UserInput): Promise<User | null> {
     const hashedPassword = await argon2.hash(data.password);
+
+    const usernameExists = await User.findOne({ username: data.username });
+
+    if (usernameExists) return null;
 
     const user = await User.create({
       username: data.username,
@@ -43,13 +45,11 @@ export class UserResolver {
   ): Promise<User | null> {
     const user = await User.findOne({ where: { username: data.username } });
 
-    if (!user)
-      return null;
+    if (!user) return null;
 
     const isValid = await argon2.verify(user.password, data.password);
 
-    if (!isValid)
-      return null;
+    if (!isValid) return null;
 
     req.session.userId = user.id;
 
@@ -78,9 +78,8 @@ export class UserResolver {
   async me(@Ctx() { req }: MyContext) {
     const userId = req.session.userId;
 
-    if (!userId)
-      return null;
+    if (!userId) return null;
 
     return await User.findOne(userId);
- }
+  }
 }

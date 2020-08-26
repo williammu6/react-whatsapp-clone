@@ -43,10 +43,7 @@ const Composer = () => {
         type="text"
         placeholder="Type a message"
       />
-      <button
-        type="submit"
-        className="text-xl w-8 hover:text-indigo-700"
-      >
+      <button type="submit" className="text-xl w-8 hover:text-indigo-700">
         <FiSend></FiSend>
       </button>
     </form>

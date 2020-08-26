@@ -27,13 +27,22 @@ export class ChatResolver {
 
     const chats = await Chat.createQueryBuilder("chat")
       .innerJoinAndSelect("chat.participants", "participants")
-      .leftJoinAndSelect("chat.messages", "messages")
-      .leftJoinAndSelect("messages.sender", "sender")
       .where("chat.id IN (:...chatsIds)", { chatsIds })
       .andWhere("participants.username != :username", { username })
       .getMany();
 
     return chats;
+  }
+
+  @Query(() => Chat, { nullable: false })
+  async chatDetails(@Arg("chatId") chatId: number): Promise<Chat> {
+    const chat = await Chat.createQueryBuilder("chat")
+      .leftJoinAndSelect("chat.messages", "messages")
+      .leftJoinAndSelect("messages.sender", "sender")
+      .where("chat.id = :chatId", { chatId })
+      .orderBy("messages.createdAt", "DESC")
+      .getOne();
+    return chat!;
   }
 
   @Mutation(() => Chat, { nullable: true })
