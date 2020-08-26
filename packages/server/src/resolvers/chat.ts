@@ -28,6 +28,7 @@ export class ChatResolver {
     const chats = await Chat.createQueryBuilder("chat")
       .innerJoinAndSelect("chat.participants", "participants")
       .leftJoinAndSelect("chat.messages", "messages")
+      .leftJoinAndSelect("messages.sender", "sender")
       .where("chat.id IN (:...chatsIds)", { chatsIds })
       .andWhere("participants.username != :username", { username })
       .getMany();
