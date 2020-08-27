@@ -3,6 +3,6 @@ import { UserType } from "./user";
 export type MessageType = {
   id: number;
   text: string;
-  createdAt: Date;
+  createdAt: string;
   sender: UserType;
 };

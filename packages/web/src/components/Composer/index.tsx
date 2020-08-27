@@ -2,6 +2,7 @@ import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import React from "react";
 import { FiSend } from "react-icons/fi";
+import {ChatType} from "../../types/chat";
 
 const SEND_MESSAGE = gql`
   mutation SendMessage($text: String!, $chatId: Float!) {
@@ -12,7 +13,7 @@ const SEND_MESSAGE = gql`
   }
 `;
 
-const Composer = () => {
+const Composer = ({ chat }: { chat: ChatType }) => {
   const [sendMessage] = useMutation(SEND_MESSAGE);
 
   const onSubmit = (e: any) => {
@@ -22,14 +23,14 @@ const Composer = () => {
 
     const text = formData.get("text");
 
-    console.log(text);
-
     const data = {
       text,
-      chatId: 1
+      chatId: chat.id
     };
 
     sendMessage({ variables: data });
+
+    e.target.reset();
   };
 
   return (
@@ -39,6 +40,7 @@ const Composer = () => {
     >
       <input
         className="flex-1 h-8 mx-2 p-2 bg-gray-100 rounded"
+        autoComplete="off"
         name="text"
         type="text"
         placeholder="Type a message"

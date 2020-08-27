@@ -61,16 +61,16 @@ const Chats = () => {
 
   return (
     <div className="flex h-screen w-screen">
-      <div className="w-4/12 bg-gray-300 h-full">
+      <div className="w-4/12 bg-gray-300 h-full shadow">
         <ChatsHeader />
         {data.getChats &&
           data.getChats.map((chat: any) => <Chat onClickEvent={() => setCurrentChat(chat)} key={chat.id} chat={chat} />)}
       </div>
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 bg-gray-800">
         { currentChat && (
           <div className="flex flex-col flex-1">
             <Messages chat={currentChat} />
-            <Composer />
+            <Composer chat={currentChat} />
           </div>
         )}
       </div>

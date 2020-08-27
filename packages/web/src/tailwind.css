@@ -3,3 +3,11 @@
 @tailwind components;
 
 @tailwind utilities;
+
+.w-fit {
+  width: fit-content;
+}
+
+.h-fit {
+  height: fit-content;
+}
