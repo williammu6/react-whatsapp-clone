@@ -2,7 +2,8 @@ import { useMutation } from "@apollo/client";
 import gql from "graphql-tag";
 import React from "react";
 import { FiSend } from "react-icons/fi";
-import {ChatType} from "../../types/chat";
+import { ChatType } from "../../types/chat";
+import { CHAT_DETAILS } from "../Messages";
 
 const SEND_MESSAGE = gql`
   mutation SendMessage($text: String!, $chatId: Float!) {
@@ -28,7 +29,10 @@ const Composer = ({ chat }: { chat: ChatType }) => {
       chatId: chat.id
     };
 
-    sendMessage({ variables: data });
+    sendMessage({
+      variables: data,
+      refetchQueries: [{ query: CHAT_DETAILS, variables: { chatId: chat.id } }]
+    });
 
     e.target.reset();
   };
