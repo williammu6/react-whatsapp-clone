@@ -6,6 +6,7 @@ import Messages from "../../components/Messages";
 import { avatarImage } from "../../constants";
 import {userContext} from "../../contexts/user";
 import { ChatType } from "../../types/chat";
+import {socket} from "../../utils/socket";
 
 const GET_CHATS = gql`
   query GetChats {
@@ -54,8 +55,22 @@ const Chat = ({ chat, onClickEvent }: { chat: ChatType, onClickEvent: any }) => 
 
 const Chats = () => {
 
+  const [connected, setConnected] = useState<boolean>(false);
   const [currentChat, setCurrentChat] = useState<ChatType | null>(null);
+
   const { data, loading, error } = useQuery(GET_CHATS);
+
+  const currentUser = useContext(userContext);
+
+
+  if (!connected && !loading) {
+    socket.emit("join", { userId: currentUser.id, chats: data.getChats });
+    socket.on("connected", () => setConnected(true));
+  }
+
+
+  socket.on("disconnected", () => setConnected(false));
+
 
   if (loading) return <h1>Loading</h1>;
   if (error) return <h1>ERROR</h1>;

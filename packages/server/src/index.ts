@@ -12,6 +12,7 @@ import session from "express-session";
 import { UserResolver } from "./resolvers/user";
 import { ChatResolver } from "./resolvers/chat";
 import { MyContext } from "./types";
+import {SocketServer} from "./socket";
 
 const main = async () => {
   await createConnection({
@@ -30,6 +31,8 @@ const main = async () => {
   const RedisStore = connectRedis(session);
 
   const redis = new Redis();
+
+  new SocketServer(app);
 
   app.use(
     cors({

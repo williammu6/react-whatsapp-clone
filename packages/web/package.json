@@ -13,7 +13,8 @@
     "react-dom": "^16.13.1",
     "react-icons": "^3.11.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "3.4.3"
+    "react-scripts": "3.4.3",
+    "socket.io-client": "^2.3.0"
   },
   "scripts": {
     "prestart": "npm run build:tailwind",
@@ -45,6 +46,7 @@
     "@graphql-codegen/typescript-react-apollo": "^2.0.6",
     "@graphql-codegen/typescript-urql": "^2.0.0",
     "@types/react-router-dom": "^5.1.5",
+    "@types/socket.io-client": "^1.4.33",
     "autoprefixer": "^9.8.6",
     "clsx": "^1.1.1",
     "postcss-cli": "^7.1.1",
