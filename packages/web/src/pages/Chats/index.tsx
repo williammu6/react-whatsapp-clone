@@ -1,9 +1,10 @@
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import Composer from "../../components/Composer";
 import Messages from "../../components/Messages";
 import { avatarImage } from "../../constants";
+import {userContext} from "../../contexts/user";
 import { ChatType } from "../../types/chat";
 
 const GET_CHATS = gql`

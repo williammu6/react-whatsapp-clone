@@ -31,8 +31,6 @@ export const Register = () => {
 
     const response = await register({ variables: { data } });
 
-    console.log(response);
-
     if (response.data.login) {
       history.push("/chats");
     }

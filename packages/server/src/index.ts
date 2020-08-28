@@ -11,7 +11,7 @@ import cors from "cors";
 import session from "express-session";
 import { UserResolver } from "./resolvers/user";
 import { ChatResolver } from "./resolvers/chat";
-import {MyContext} from "./types";
+import { MyContext } from "./types";
 
 const main = async () => {
   await createConnection({
@@ -53,7 +53,7 @@ const main = async () => {
       },
       secret: process.env.SESSION_SECRET!,
       saveUninitialized: false,
-      resave: false,
+      resave: false
     })
   );
 
@@ -68,8 +68,8 @@ const main = async () => {
     context: ({ req, res, redis }: MyContext) => ({
       req,
       res,
-      redis,
-    }),
+      redis
+    })
   });
 
   apolloServer.applyMiddleware({ app, cors: false });

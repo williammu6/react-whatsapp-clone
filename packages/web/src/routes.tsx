@@ -5,6 +5,7 @@ import { Switch, BrowserRouter, Route, Redirect } from "react-router-dom";
 
 import Chats from "./pages/Chats";
 import Home from "./pages/Home";
+import {userContext} from "./contexts/user";
 
 const ME = gql`
   query Me {
@@ -24,12 +25,15 @@ const PrivateRoute = ({ path, component }: any) => {
     return !!data.me;
   }
 
+  const authRoutes = () =>
+    <userContext.Provider value={data.me}>
+      <Route path={path} component={component} />
+    </userContext.Provider>;
+
   return (
     <>
       {
-        isAuth() ?
-          <Route path={path} component={component} /> :
-          <Redirect to="/login" />
+        isAuth() ? authRoutes() : <Redirect to="/" />
       }
     </>
   );
